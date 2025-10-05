@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Kuliah Otomatis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <button id="menu-toggle" class="menu-toggle">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </button>
+
+    <nav id="sidebar" class="sidebar">
+        <ul>
+            <li><a href="index.html">Jadwal Kuliah</a></li>
+            <li><a href="tugas.html">1. Tugas dari Dosen</a></li>
+            <li><a href="materi.html">2. Materi dari Dosen</a></li>
+            <li><a href="kelompok.html">5. Tugas Kelompok</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <header>
+            <h1>Jadwal Kuliah Hari Ini</h1>
+        </header>
+
+        <main>
+            <div id="libur" class="day-schedule">
+                <h2>Hari Libur!</h2>
+                <p>Tidak ada jadwal kuliah hari ini. Selamat beristirahat!</p>
+            </div>
+            </div>
+
+            <div id="selasa" class="day-schedule">
+                <h2>Selasa</h2>
+                <ul>
+                    <li class="color-pink"><span>06:15 - 08:20</span> introdaction to acounting</li>
+                    <li class="color-red"><span>09:10 - 11:20</span> introdaction to management</li>
+                </ul>
+            </div>
+
+            <div id="libur" class="day-schedule">
+                <h2>Hari Libur!</h2>
+                <p>Tidak ada jadwal kuliah hari ini. Selamat beristirahat!</p>
+            </div>
+            </div>
+            
+            <div id="kamis" class="day-schedule">
+                <h2>Kamis</h2>
+                <ul>
+                    <li class="color-red"><span>12:00 - 14:10</span> Introduction to Business</li>
+                </ul>
+            </div>
+
+            <div id="jumat" class="day-schedule">
+                <h2>Jumat</h2>
+                <ul>
+                    <li class="color-pink"><span>07:30 - 09:30</span> Religion</li> 
+                    <li class="color-red"><span>13:20 - 15:50</span> Elementary English</li>
+                </ul>
+            </div>
+            
+            <div id="sabtu" class="day-schedule">
+                <h2>sabtu</h2>
+                <ul>
+                   <li class="color-pink"><span>06:15 - 07:30</span> Micro Economics</li>
+                   <li class="color-red"><span>08:20 - 09:10</span> English 1</li>
+                   <li class="color-pink"><span>10:30 - 12:00</span> Madura Culture</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

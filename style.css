@@ -1,0 +1,171 @@
+/* Pengaturan Dasar dan Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #ffffff; /* Sesuai permintaan: background putih */
+    color: #333;
+    transition: margin-left 0.3s;
+}
+
+/* Tombol Menu (Hamburger) */
+.menu-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: #333;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.menu-toggle .bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    margin: 5px auto;
+    transition: 0.3s;
+}
+
+/* Menu Samping (Sidebar) */
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: -250px; /* Sembunyikan di luar layar */
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 80px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+}
+
+.sidebar.active {
+    left: 0; /* Tampilkan saat aktif */
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar ul li a {
+    padding: 15px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #f1f1f1;
+    display: block;
+    transition: 0.2s;
+}
+
+.sidebar ul li a:hover {
+    background-color: #575757;
+    border-left: 5px solid #007bff;
+}
+
+/* Konten Utama */
+.content, .content-page {
+    padding: 20px;
+    margin-left: 0;
+    transition: margin-left 0.3s;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+}
+
+header h1 {
+    color: #333;
+    font-weight: 600;
+}
+
+/* Kartu Jadwal per Hari */
+.day-schedule {
+    display: none; /* Sembunyikan semua jadwal secara default */
+    background: #fdfdfd;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.day-schedule.active {
+    display: block; /* Tampilkan hanya jadwal yang aktif */
+}
+
+.day-schedule h2 {
+    font-size: 24px;
+    color: #007bff;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+/* Item Jadwal Kuliah */
+.day-schedule ul {
+    list-style: none;
+}
+
+.day-schedule ul li {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 400;
+    border-left: 5px solid;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.day-schedule ul li span {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Warna-warni untuk Jadwal */
+.color-red { border-left-color: #e74c3c; } /* Merah */
+.color-pink { border-left-color: #e91e63; } /* Pink */
+.color-blue { border-left-color: #3498db; } /* Biru */
+
+/* Pengaturan untuk halaman konten seperti tugas, materi, dll. */
+.content-page {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fdfdfd;
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid #eee;
+}
+
+.content-page h1 {
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.content-page p {
+    line-height: 1.6;
+}
+
+.content-page ul {
+    list-style-position: inside;
+    margin-top: 20px;
+}
