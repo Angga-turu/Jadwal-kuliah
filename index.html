@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIAKAD Bahaudin Mudhari (Mobile)</title>
+    <style>
+        /* CSS VARIABLES & RESET */
+        :root {
+            --primary: #1E3A8A; /* Biru Tua */
+            --primary-active: #172554;
+            --accent: #38bdf8; /* Biru Muda */
+            --task-alert: #d97706; /* Oranye untuk text tugas di background terang */
+            --task-alert-light: #fcd34d; /* Kuning/Oranye terang untuk text tugas di background gelap */
+            --bg-color: #f8fafc; /* Krem/Putih Lembut */
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+            --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 15px rgba(0,0,0,0.08);
+            --radius: 16px; /* Sudut membulat */
+            --transition: all 0.25s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 14pt;
+        }
+
+        /* TYPOGRAPHY */
+        h1, h2, h3, h4 { color: var(--primary); font-weight: 600; margin-bottom: 12px; font-size: 16pt; }
+        p { color: var(--text-muted); line-height: 1.6; }
+
+        /* BUTTONS (Touch Optimized) */
+        .btn {
+            background: var(--primary); color: white; border: none; 
+            padding: 12px 20px; border-radius: 12px; font-size: 14pt; font-weight: 600; 
+            cursor: pointer; transition: var(--transition); box-shadow: var(--shadow-sm);
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            min-height: 48px; width: 100%;
+        }
+        .btn:active { background: var(--primary-active); transform: scale(0.98); box-shadow: inset 0 3px 5px rgba(0,0,0,0.2); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:active { background: #e0f2fe; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:active { background: #b91c1c; }
+        .btn-small { min-height: 40px; padding: 8px 16px; font-size: 12pt; width: auto; }
+
+        /* FORMS */
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 13pt; color: var(--text-main); }
+        .form-control {
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border);
+            border-radius: 12px; transition: var(--transition); background: var(--bg-color);
+            min-height: 48px; font-size: 14pt;
+        }
+        .form-control:focus { outline: none; border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2); }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+        .checkbox-group input[type="checkbox"] { width: 24px; height: 24px; }
+        .checkbox-group label { margin: 0; font-size: 12pt; font-weight: normal; }
+
+        /* CARDS */
+        .card { background: var(--surface); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-md); margin-bottom: 20px; }
+
+        /* LOGIN SCREEN */
+        #login-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .login-box { width: 100%; max-width: 400px; text-align: center; }
+        .tab-buttons { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 25px; }
+        .tab-btn {
+            flex: 1; padding: 15px 10px; background: none; border: none; cursor: pointer; font-weight: 600;
+            color: var(--text-muted); border-bottom: 3px solid transparent; margin-bottom: -2px; font-size: 13pt; min-height: 48px;
+        }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .feedback { font-size: 12pt; font-weight: 600; margin-top: 10px; display: none; }
+        .valid-feedback { color: var(--success); }
+        .invalid-feedback { color: var(--danger); }
+
+        /* APP LAYOUT & NAVBAR MOBILE */
+        #app-layout { display: none; flex-direction: column; min-height: 100vh; }
+        
+        .mobile-navbar {
+            display: flex; justify-content: space-between; align-items: center; 
+            background: var(--primary); color: white; padding: 15px 20px;
+            position: sticky; top: 0; z-index: 900; box-shadow: var(--shadow-md);
+        }
+        .hamburger {
+            background: none; border: none; color: white; font-size: 24pt; 
+            cursor: pointer; min-height: 48px; min-width: 48px; display: flex; align-items: center; justify-content: flex-start;
+        }
+        .datetime-display { text-align: right; font-size: 12pt; font-weight: 500; }
+
+        /* SIDEBAR (Off-canvas for Mobile) */
+        .sidebar {
+            position: fixed; top: 0; left: -100%; width: 280px; height: 100%;
+            background: var(--surface); box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            z-index: 1000; transition: left 0.3s ease; display: flex; flex-direction: column;
+            overflow-y: auto;
+        }
+        .sidebar.open { left: 0; }
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s;
+        }
+        .sidebar-overlay.show { display: block; opacity: 1; }
+        
+        .sidebar-brand { padding: 25px 20px; border-bottom: 1px solid var(--border); background: var(--bg-color); }
+        .nav-item {
+            padding: 18px 20px; display: flex; align-items: center; gap: 15px; color: var(--text-muted); 
+            text-decoration: none; font-weight: 600; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 14pt;
+        }
+        .nav-item:active, .nav-item.active { background: #e0f2fe; color: var(--primary); border-left: 5px solid var(--primary); }
+        
+        .user-profile { margin-top: auto; padding: 25px 20px; border-top: 1px solid var(--border); background: var(--bg-color); }
+        .user-profile h4 { margin-bottom: 5px; font-size: 14pt; }
+        .user-profile p { font-size: 12pt; margin-bottom: 15px; }
+
+        /* MAIN CONTENT */
+        .main-content { padding: 20px; flex: 1; overflow-x: hidden; }
+        .page-header { margin-bottom: 20px; }
+        
+        /* CONTENT ITEMS & CARDS */
+        .content-item { 
+            border: 1px solid var(--border); border-radius: 12px; padding: 16px; 
+            margin-bottom: 15px; background: white; position: relative;
+        }
+        .content-item:active { background: #f8fafc; }
+        
+        .schedule-divider { border-bottom: 1px solid var(--border); margin: 12px 0; }
+        .schedule-divider:last-child { display: none; }
+
+        .badge { background: #e0f2fe; color: var(--primary); padding: 6px 10px; border-radius: 6px; font-size: 11pt; font-weight: bold; display: inline-block; }
+        
+        /* SWIPEABLE CARDS (Tugas) */
+        .swipe-container {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; 
+            gap: 10px; padding-bottom: 10px; margin: 0 -20px 15px -20px; padding-left: 20px; padding-right: 20px;
+        }
+        .swipe-container::-webkit-scrollbar { display: none; }
+        .swipe-card { 
+            flex: 0 0 85%; scroll-snap-align: center; background: white; border: 1px solid var(--border); 
+            border-radius: 12px; padding: 16px; box-shadow: var(--shadow-sm);
+        }
+        .card-actions { display: flex; gap: 10px; margin-top: 15px; }
+
+        /* ANNOUNCEMENTS & EXPANDABLE */
+        .announcement-card { border-left: 4px solid var(--accent); transition: max-height 0.3s; overflow: hidden; }
+        .new-dot { display: inline-block; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; margin-right: 8px; }
+        .expandable-body { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border); }
+        .announcement-card.open .expandable-body { display: block; }
+
+        /* LIST WITH THUMBNAILS (Materi/Makalah) */
+        .list-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; background: white; }
+        .list-thumb { width: 48px; height: 48px; background: #e0f2fe; color: var(--primary); display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: 20pt; flex-shrink: 0; }
+        .list-content { flex: 1; overflow: hidden; }
+        .list-content h4 { margin: 0 0 4px 0; font-size: 13pt; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .list-content p { margin: 0; font-size: 11pt; }
+
+        /* MULTI-STEP FORM */
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.3s; }
+        .step-indicator { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .dot { width: 12px; height: 12px; background: var(--border); border-radius: 50%; }
+        .dot.active { background: var(--primary); }
+        .multi-select-box { border: 1px solid var(--border); height: 200px; overflow-y: auto; padding: 15px; border-radius: 12px; background: var(--bg-color); }
+        .multi-select-box label { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13pt; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="card login-box">
+            <h2>SIAKAD UBahaudin</h2>
+            <p style="margin-bottom: 20px; font-size: 12pt;">Portal Akademik MGH25</p>
+            
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchLoginTab('student')">Mahasiswa</button>
+                <button class="tab-btn" onclick="switchLoginTab('committee')">Admin Komite</button>
+            </div>
+
+            <div id="form-student">
+                <div class="form-group">
+                    <input type="number" id="login-npm" class="form-control" placeholder="Masukkan NPM Anda" oninput="validateStudentLogin()">
+                    <div id="student-valid" class="feedback valid-feedback">✔️ <span id="student-name-display"></span></div>
+                    <div id="student-invalid" class="feedback invalid-feedback">NPM tidak terdaftar!</div>
+                </div>
+                <div class="checkbox-group" style="justify-content: center; margin-bottom: 20px;">
+                    <input type="checkbox" id="remember-student"> <label for="remember-student">Ingat sesi login saya</label>
+                </div>
+                <button class="btn" onclick="doLogin('student')">Masuk</button>
+            </div>
+
+            <div id="form-committee" class="hidden">
+                <div class="form-group">
+                    <input type="text" id="com-name" class="form-control" placeholder="Nama Lengkap">
+                </div>
+                <div class="form-group">
+                    <input type="number" id="com-npm" class="form-control" placeholder="NPM Komite">
+                </div>
+                <div class="form-group">
+                    <input type="email" id="com-email" class="form-control" placeholder="Email Komite">
+                </div>
+                <div id="committee-invalid" class="feedback invalid-feedback">Data komite tidak valid.</div>
+                <div class="checkbox-group" style="justify-content: center; margin-bottom: 20px;">
+                    <input type="checkbox" id="remember-committee"> <label for="remember-committee">Ingat sesi login saya</label>
+                </div>
+                <button class="btn" onclick="doLogin('committee')">Masuk Sistem Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-layout">
+        
+        <div class="mobile-navbar">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="datetime-display" id="mobile-clock">Tanggal<br>Waktu</div>
+        </div>
+
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <h3>SIAKAD Mobile</h3>
+            </div>
+            
+            <div class="nav-item active" onclick="navigate('dashboard')">🏠 Dashboard</div>
+            <div class="nav-item" onclick="navigate('schedule')">📅 Jadwal Kuliah</div>
+            <div class="nav-item" onclick="navigate('task-ind')">📝 Tugas Individu</div>
+            <div class="nav-item" onclick="navigate('task-grp')">👥 Tugas Kelompok</div>
+            <div class="nav-item" onclick="navigate('announcement')">📢 Pengumuman</div>
+            <div class="nav-item" onclick="navigate('materials')">📚 Materi Kuliah</div>
+            <div class="nav-item" onclick="navigate('makalah')">📄 Makalah</div>
+            <div class="nav-item" onclick="navigate('ppt')">📊 PPT / Presentasi</div>
+
+            <div class="user-profile">
+                <h4 id="profile-name">Nama</h4>
+                <p id="profile-role">NPM/Role</p>
+                <button class="btn btn-danger" onclick="logout()">Keluar Aplikasi</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-header">
+                <h2 id="page-title">Dashboard</h2>
+            </div>
+
+            <div id="view-dashboard" class="view-section">
+                <div class="card" style="background: linear-gradient(135deg, #1E3A8A 0%, #3b82f6 100%); color: white;">
+                    <h3 style="color: white; margin-bottom: 5px;">Jadwal Hari Ini</h3>
+                    <div id="today-schedule-container" style="margin-top: 15px;">
+                        </div>
+                </div>
+                <div id="next-schedule-container">
+                     </div>
+            </div>
+
+            <div id="view-schedule" class="view-section hidden">
+                <div id="full-schedule-list"></div>
+            </div>
+
+            <div id="view-content-manager" class="view-section hidden">
+                
+                <div class="card admin-only" id="form-add-container" style="margin-bottom: 25px;">
+                    <h3 id="form-add-title">Tambah Konten Baru</h3>
+                    
+                    <div class="step-indicator">
+                        <span class="dot active" id="dot-1"></span>
+                        <span class="dot" id="dot-2"></span>
+                        <span class="dot hidden" id="dot-3"></span>
+                    </div>
+
+                    <div class="step active" id="step-1">
+                        <div class="form-group" id="group-course">
+                            <label>Pilih Mata Kuliah</label>
+                            <select id="form-course" class="form-control" onchange="syncDay()"></select>
+                        </div>
+                        <div class="form-group" id="group-day">
+                            <label>Hari Terjadwal</label>
+                            <input type="text" id="form-day" class="form-control" readonly style="background: #e2e8f0; color: #64748b;">
+                        </div>
+                        <div class="form-group">
+                            <label>Judul / Keterangan</label>
+                            <input type="text" id="form-title" class="form-control" placeholder="Tulis judul disini...">
+                        </div>
+                        <button class="btn" onclick="nextStep(2)">Selanjutnya ➔</button>
+                    </div>
+
+                    <div class="step" id="step-2">
+                        <div class="form-group" id="group-deadline">
+                            <label>Batas Waktu (Tenggat)</label>
+                            <input type="date" id="form-date" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Lampiran (File / Link Drive)</label>
+                            <input type="text" id="form-file" class="form-control" placeholder="Tempel link URL disini...">
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-outline" onclick="prevStep(1)">⬅ Kembali</button>
+                            <button class="btn" id="btn-to-step3" onclick="nextStep(3)">Pilih Anggota ➔</button>
+                            <button class="btn" id="btn-save-step2" onclick="saveContent()">Simpan ✔️</button>
+                        </div>
+                    </div>
+
+                    <div class="step" id="step-3">
+                        <div class="form-group">
+                            <label>Pilih Anggota Mahasiswa</label>
+                            <div class="multi-select-box" id="student-checkboxes"></div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-outline" onclick="prevStep(2)">⬅ Kembali</button>
+                            <button class="btn" onclick="saveContent()">Simpan Konten ✔️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="content-list-container"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- DATABASES ---
+        const dbStudents = {
+            "2502210193": "SEFTIANA KIKI", "2502210194": "MUHAMMAD FIKRI", "2502210195": "DEVIT RIANASARI",
+            "2502210196": "MUH. SUJUDI", "2502210197": "MOH. DIDIK", "2502210198": "WIWIN ROSITA",
+            "2502210199": "YOGA", "2502210200": "SINDY ROMADANI", "2502210201": "SOFIATUL HASANAH",
+            "2502210202": "NAVISA NUR", "2502210203": "SURYA FAJRI", "2502210204": "NURUL WAHIDANAH",
+            "2502210205": "MOHAMMAD HARIYANTO", "2502210206": "LAILATUL NAJAD", "2502210207": "AHMAD NASHIHUL",
+            "2502210208": "SIELMA NABILA", "2502210209": "AMALIATUL LATIFAH", "2502210210": "NUR JANNAH",
+            "2502210211": "HENDRI WAHYUDI", "2502210212": "WILDATURRUHMA", "2502210213": "M. ANGGA KURNIAWAN",
+            "2502210214": "REVALDA AMILIA", "2502210215": "MOH AKBAR", "2502210216": "YUSRIL RESTU",
+            "2502210217": "FARHAN MUBAROK", "2502210218": "FILDA LIANI", "2502210219": "MOH HERDI",
+            "2502210396": "ACH. FARQI"
+        };
+
+        const dbCommittee = { name: "MOHAMMAD ANGGGA KURNIAWAN FAHRAZY", npm: "2502210213", email: "mgh25@gmail.com" };
+
+        const scheduleData = [
+            { day: "Senin", start: "09:20", end: "11:00", course: "Business Ethics", sks: 2, lecturer: "Rahmat Zulkarnain", room: "KAPANJIN 3-1" },
+            { day: "Senin", start: "15:00", end: "16:40", course: "Management Information System", sks: 2, lecturer: "Ayel Robbul", room: "KAPANJIN 3-3" },
+            { day: "Selasa", start: "08:30", end: "11:00", course: "Marketing Management", sks: 3, lecturer: "As'adi Khas", room: "Ariskul Fikri" },
+            { day: "Selasa", start: "15:00", end: "16:40", course: "Intro to Info Technology", sks: 2, lecturer: "Budyi Suswanto", room: "Ariskul Fikri" },
+            { day: "Rabu", start: "08:30", end: "10:10", course: "Macro Economics", sks: 2, lecturer: "Nurul Hidayat", room: "DARAMISTA 2-D" },
+            { day: "Rabu", start: "12:30", end: "14:10", course: "Math for Economics", sks: 2, lecturer: "Najiatun", room: "KAPANJIN 2-3" },
+            { day: "Rabu", start: "14:30", end: "15:40", course: "Indo & Scientific Writing", sks: 2, lecturer: "Endang Agus", room: "KAPANJIN 2-3" },
+            { day: "Kamis", start: "08:30", end: "11:00", course: "Civics & Pancasila", sks: 3, lecturer: "Edi Awan", room: "KAPANJIN 3-3" },
+            { day: "Kamis", start: "12:30", end: "14:10", course: "Business Law", sks: 2, lecturer: "Rahmad Ready", room: "DARAMISTA 2-J" },
+            { day: "Sabtu", start: "11:00", end: "11:50", course: "English 2", sks: 1, lecturer: "Cristian Anggraini", room: "KAPANJIN 1-1" },
+            { day: "Sabtu", start: "12:00", end: "14:30", course: "HR Management", sks: 3, lecturer: "Pak Camat Lenteng", room: "KAPANJIN 1-3" }
+        ];
+
+        let appData = JSON.parse(localStorage.getItem('siakadDataHP')) || {
+            'task-ind': [], 'task-grp': [], 'announcement': [], 'materials': [], 'makalah': [], 'ppt': []
+        };
+        let currentUser = null;
+        let currentMode = 'dashboard';
+
+        // --- INIT & UTILS ---
+        window.onload = () => {
+            updateClock();
+            setInterval(updateClock, 60000);
+            
+            const savedSession = localStorage.getItem('siakadSessionHP');
+            if (savedSession) {
+                currentUser = JSON.parse(savedSession);
+                initApp();
+            }
+        };
+
+        function updateClock() {
+            const now = new Date();
+            const dateOpts = { weekday: 'short', day: 'numeric', month: 'short' };
+            const timeOpts = { hour: '2-digit', minute:'2-digit' };
+            document.getElementById('mobile-clock').innerHTML = 
+                `${now.toLocaleDateString('id-ID', dateOpts)}<br><span style="color:var(--accent); font-size:14pt;">${now.toLocaleTimeString('id-ID', timeOpts)}</span>`;
+        }
+
+        // --- LOGIN LOGIC ---
+        function switchLoginTab(type) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('form-student').classList.add('hidden');
+            document.getElementById('form-committee').classList.add('hidden');
+            document.getElementById('student-valid').style.display = 'none';
+            document.getElementById('student-invalid').style.display = 'none';
+            document.getElementById('committee-invalid').style.display = 'none';
+            
+            if(type === 'student') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('form-student').classList.remove('hidden');
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('form-committee').classList.remove('hidden');
+            }
+        }
+
+        function validateStudentLogin() {
+            const npm = document.getElementById('login-npm').value;
+            const validDiv = document.getElementById('student-valid');
+            const nameSpan = document.getElementById('student-name-display');
+            
+            if(dbStudents[npm]) {
+                nameSpan.innerText = dbStudents[npm];
+                validDiv.style.display = 'block';
+                document.getElementById('student-invalid').style.display = 'none';
+                return dbStudents[npm];
+            } else {
+                validDiv.style.display = 'none';
+                return null;
+            }
+        }
+
+        function doLogin(type) {
+            if(type === 'student') {
+                const npm = document.getElementById('login-npm').value;
+                const name = validateStudentLogin();
+                if(name) {
+                    currentUser = { role: 'student', npm: npm, name: name };
+                    if(document.getElementById('remember-student').checked) localStorage.setItem('siakadSessionHP', JSON.stringify(currentUser));
+                    initApp();
+                } else {
+                    document.getElementById('student-invalid').style.display = 'block';
+                }
+            } else {
+                const name = document.getElementById('com-name').value.toUpperCase();
+                const npm = document.getElementById('com-npm').value;
+                const email = document.getElementById('com-email').value;
+                
+                if(name === dbCommittee.name && npm === dbCommittee.npm && email === dbCommittee.email) {
+                    currentUser = { role: 'committee', npm: npm, name: "Admin: " + name };
+                    if(document.getElementById('remember-committee').checked) localStorage.setItem('siakadSessionHP', JSON.stringify(currentUser));
+                    initApp();
+                } else {
+                    document.getElementById('committee-invalid').style.display = 'block';
+                }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('siakadSessionHP');
+            currentUser = null;
+            document.getElementById('app-layout').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('login-npm').value = '';
+            document.getElementById('student-valid').style.display = 'none';
+            toggleSidebar(false);
+        }
+
+        // --- NAVIGATION & SIDEBAR ---
+        function toggleSidebar(forceClose = null) {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sidebar-overlay');
+            if(forceClose === false || sb.classList.contains('open')) {
+                sb.classList.remove('open');
+                ov.classList.remove('show');
+            } else {
+                sb.classList.add('open');
+                ov.classList.add('show');
+            }
+        }
+
+        function initApp() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-layout').style.display = 'flex';
+            
+            document.getElementById('profile-name').innerText = currentUser.name;
+            document.getElementById('profile-role').innerText = currentUser.role === 'committee' ? 'Akses: Pengurus / Komite' : `NPM: ${currentUser.npm}`;
+
+            const adminEls = document.querySelectorAll('.admin-only');
+            adminEls.forEach(el => el.style.display = currentUser.role === 'committee' ? 'block' : 'none');
+
+            setupForms();
+            navigate('dashboard');
+        }
+
+        function navigate(menu) {
+            toggleSidebar(false); 
+            currentMode = menu;
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.querySelectorAll('.nav-item').forEach(el => {
+                if(el.innerText.toLowerCase().includes(menuConfig[menu]?.title.toLowerCase().split(' ')[0] || menu)) {
+                    el.classList.add('active');
+                }
+            });
+
+            if(menu === 'dashboard') {
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                document.getElementById('page-title').innerText = "Dashboard Utama";
+                renderDashboard();
+            } else if (menu === 'schedule') {
+                document.getElementById('view-schedule').classList.remove('hidden');
+                document.getElementById('page-title').innerText = "Jadwal Perkuliahan";
+                renderFullSchedule();
+            } else {
+                document.getElementById('view-content-manager').classList.remove('hidden');
+                setupContentManager(menu);
+            }
+        }
+
+        // --- LOGIKA DETEKSI TUGAS ---
+        function getTasksForCourse(courseName) {
+            let tasks = [];
+            // Ambil dari Tugas Individu
+            if (appData['task-ind']) {
+                tasks = tasks.concat(appData['task-ind'].filter(t => t.course === courseName));
+            }
+            // Ambil dari Tugas Kelompok
+            if (appData['task-grp']) {
+                tasks = tasks.concat(appData['task-grp'].filter(t => t.course === courseName));
+            }
+            return tasks;
+        }
+
+        // --- DASHBOARD RENDERING ---
+        function renderDashboard() {
+            const daysIndo = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const todayIndex = new Date().getDay();
+            let currentDayStr = daysIndo[todayIndex];
+            
+            const todayContainer = document.getElementById('today-schedule-container');
+            const nextContainer = document.getElementById('next-schedule-container');
+            
+            let todayClasses = scheduleData.filter(s => s.day === currentDayStr);
+            let htmlToday = '';
+            
+            // RENDER HARI INI
+            if(todayClasses.length > 0) {
+                todayClasses.forEach(c => {
+                    // Deteksi Tugas
+                    let tasks = getTasksForCourse(c.course);
+                    let taskHtml = '';
+                    if (tasks.length > 0) {
+                        tasks.forEach(t => {
+                            taskHtml += `<p style="margin:8px 0 0 0; font-size:12pt; color:var(--task-alert-light); font-weight:600;">📝 Ada tugas: ${t.title} - Tenggat: ${t.date || 'Belum diatur'}</p>`;
+                        });
+                    }
+
+                    htmlToday += `
+                        <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <strong style="font-size:13pt;">${c.course}</strong>
+                                <span class="badge" style="background:var(--accent); color:white;">${c.start}</span>
+                            </div>
+                            <p style="margin:0; font-size:11pt; color:#e0f2fe;">Jam ${c.start} di ${c.room}</p>
+                            ${taskHtml}
+                        </div>
+                    `;
+                });
+                todayContainer.innerHTML = htmlToday;
+                nextContainer.innerHTML = ''; 
+            } else {
+                todayContainer.innerHTML = `<p style="color:white; font-style:italic;">Libur! Tidak ada kuliah hari ini.</p>`;
+                
+                // RENDER PREVIEW JADWAL SELANJUTNYA
+                let step = 1;
+                while(step <= 7) {
+                    let nextDayStr = daysIndo[(todayIndex + step) % 7];
+                    let nextDayClasses = scheduleData.filter(s => s.day === nextDayStr);
+                    if(nextDayClasses.length > 0) {
+                        let htmlNext = `<h3 style="margin-top:20px;">Preview: ${nextDayStr}</h3><div class="card">`;
+                        nextDayClasses.forEach((c, i) => {
+                            // Deteksi Tugas
+                            let tasks = getTasksForCourse(c.course);
+                            let taskHtml = '';
+                            if (tasks.length > 0) {
+                                tasks.forEach(t => {
+                                    taskHtml += `<p style="margin:6px 0 0 0; font-size:12pt; color:var(--task-alert); font-weight:600;">📝 Ada tugas: ${t.title} - Tenggat: ${t.date || 'Belum diatur'}</p>`;
+                                });
+                            }
+
+                            htmlNext += `
+                                <div style="padding: 10px 0;">
+                                    <strong style="font-size:13pt;">${c.course}</strong><br>
+                                    <span style="font-size:11pt; color:var(--text-muted);">Jam ${c.start} di ${c.room}</span>
+                                    ${taskHtml}
+                                </div>
+                                <div class="schedule-divider"></div>
+                            `;
+                        });
+                        htmlNext += `</div>`;
+                        nextContainer.innerHTML = htmlNext;
+                        break;
+                    }
+                    step++;
+                }
+            }
+        }
+
+        function renderFullSchedule() {
+            const container = document.getElementById('full-schedule-list');
+            container.innerHTML = '';
+            
+            const grouped = scheduleData.reduce((acc, curr) => {
+                if(!acc[curr.day]) acc[curr.day] = [];
+                acc[curr.day].push(curr);
+                return acc;
+            }, {});
+
+            for (let day in grouped) {
+                let html = `<div class="card"><h3 style="border-bottom: 2px solid var(--border); padding-bottom: 10px;">${day}</h3>`;
+                grouped[day].forEach(c => {
+                    html += `
+                        <div style="padding: 10px 0;">
+                            <span class="badge" style="margin-bottom:5px;">${c.start} - ${c.end}</span><br>
+                            <strong style="font-size:13pt;">${c.course} (${c.sks} SKS)</strong>
+                            <p style="margin:2px 0; font-size:11pt;">👨‍🏫 ${c.lecturer}</p>
+                            <p style="margin:0; font-size:11pt;">📍 ${c.room}</p>
+                        </div>
+                        <div class="schedule-divider"></div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML += html;
+            }
+        }
+
+        // --- CONTENT MANAGEMENT (Multi-step Form & Lists) ---
+        const menuConfig = {
+            'task-ind': { title: 'Tugas Individu', type: 'swipe', hasGroup: false, reqCourse: true },
+            'task-grp': { title: 'Tugas Kelompok', type: 'swipe', hasGroup: true, reqCourse: true },
+            'announcement': { title: 'Pengumuman', type: 'expand', hasGroup: false, reqCourse: false },
+            'materials': { title: 'Materi Kuliah', type: 'list', hasGroup: false, reqCourse: true },
+            'makalah': { title: 'Makalah', type: 'list', hasGroup: true, reqCourse: true },
+            'ppt': { title: 'Presentasi PPT', type: 'list', hasGroup: true, reqCourse: true }
+        };
+
+        function setupForms() {
+            const select = document.getElementById('form-course');
+            select.innerHTML = '<option value="">-- Pilih Mata Kuliah --</option>';
+            [...new Set(scheduleData.map(item => item.course))].forEach(c => select.innerHTML += `<option value="${c}">${c}</option>`);
+
+            const chkContainer = document.getElementById('student-checkboxes');
+            chkContainer.innerHTML = '';
+            for(let npm in dbStudents) {
+                chkContainer.innerHTML += `<label><input type="checkbox" value="${npm}"> ${dbStudents[npm]} (${npm})</label>`;
+            }
+        }
+
+        function syncDay() {
+            const course = document.getElementById('form-course').value;
+            const scheduleItem = scheduleData.find(s => s.course === course);
+            document.getElementById('form-day').value = scheduleItem ? scheduleItem.day : '';
+        }
+
+        function setupContentManager(menuKey) {
+            const config = menuConfig[menuKey];
+            document.getElementById('page-title').innerText = config.title;
+            
+            document.getElementById('group-course').style.display = config.reqCourse ? 'block' : 'none';
+            document.getElementById('group-day').style.display = config.reqCourse ? 'block' : 'none';
+            document.getElementById('group-deadline').style.display = (menuKey.includes('task')) ? 'block' : 'none';
+            
+            document.getElementById('dot-3').style.display = config.hasGroup ? 'block' : 'none';
+            document.getElementById('btn-to-step3').style.display = config.hasGroup ? 'inline-flex' : 'none';
+            document.getElementById('btn-save-step2').style.display = config.hasGroup ? 'none' : 'inline-flex';
+
+            nextStep(1);
+
+            const canAdd = currentUser.role === 'committee' || menuKey === 'makalah' || menuKey === 'ppt';
+            document.getElementById('form-add-container').style.display = canAdd ? 'block' : 'none';
+
+            renderContentList(menuKey);
+        }
+
+        function nextStep(stepNum) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            document.getElementById('step-' + stepNum).classList.add('active');
+            document.getElementById('dot-' + stepNum).classList.add('active');
+        }
+        function prevStep(stepNum) { nextStep(stepNum); }
+
+        function saveContent() {
+            const config = menuConfig[currentMode];
+            const course = config.reqCourse ? document.getElementById('form-course').value : 'Umum';
+            const day = config.reqCourse ? document.getElementById('form-day').value : '-';
+            const title = document.getElementById('form-title').value;
+            const date = document.getElementById('form-date').value;
+            const file = document.getElementById('form-file').value;
+            
+            if(!title) return alert("Judul wajib diisi!");
+
+            let assignedStudents = [];
+            if(config.hasGroup) {
+                document.querySelectorAll('#student-checkboxes input:checked').forEach(chk => {
+                    assignedStudents.push(dbStudents[chk.value]);
+                });
+            }
+
+            const newItem = {
+                id: Date.now(), author: currentUser.name, course, day, title, date, file, students: assignedStudents, 
+                timestamp: new Date().toLocaleDateString('id-ID')
+            };
+
+            appData[currentMode].unshift(newItem);
+            localStorage.setItem('siakadDataHP', JSON.stringify(appData));
+            
+            document.querySelectorAll('#form-add-container input').forEach(input => input.type === 'checkbox' ? input.checked = false : input.value = '');
+            document.getElementById('form-course').value = '';
+            
+            nextStep(1); 
+            renderContentList(currentMode);
+            alert("Data berhasil disimpan!");
+        }
+
+        function renderContentList(menuKey) {
+            const container = document.getElementById('content-list-container');
+            const data = appData[menuKey];
+            const config = menuConfig[menuKey];
+            container.innerHTML = `<h3 style="margin-bottom:15px;">Daftar ${config.title}</h3>`;
+
+            if(data.length === 0) {
+                container.innerHTML += `<p style="text-align:center; padding:20px; background:white; border-radius:12px;">Belum ada data.</p>`;
+                return;
+            }
+
+            let html = '';
+
+            if(config.type === 'swipe') {
+                html += `<p style="font-size:11pt; margin-bottom:10px;"><em>*Geser kartu ke kiri/kanan untuk melihat</em></p><div class="swipe-container">`;
+                data.forEach(item => {
+                    html += `
+                        <div class="swipe-card">
+                            <span class="badge" style="margin-bottom:10px;">${item.course}</span>
+                            <h4 style="margin-bottom:5px;">${item.title}</h4>
+                            <p style="font-size:12pt; color:var(--danger); font-weight:bold;">Tenggat: ${item.date || '-'}</p>
+                            ${item.students && item.students.length > 0 ? `<p style="font-size:11pt; margin-top:10px; padding:5px; background:var(--bg-color); border-radius:6px;">Anggota: ${item.students.join(', ')}</p>` : ''}
+                            <div class="card-actions">
+                                <button class="btn btn-small btn-outline">Detail</button>
+                                ${item.file ? `<button class="btn btn-small" onclick="window.open('${item.file}', '_blank')">Buka Link</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } 
+            else if (config.type === 'expand') {
+                data.forEach((item, index) => {
+                    let isNew = index === 0 ? `<span class="new-dot"></span>` : '';
+                    html += `
+                        <div class="content-item announcement-card" onclick="this.classList.toggle('open')">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4 style="margin:0;">${isNew}${item.title}</h4>
+                                <span style="font-size:16pt; color:var(--text-muted);">▼</span>
+                            </div>
+                            <div class="expandable-body">
+                                <p style="font-size:11pt; margin-bottom:15px;">Dibuat: ${item.timestamp} oleh Admin</p>
+                                ${item.file ? `<button class="btn btn-small" style="width:100%;" onclick="window.open('${item.file}', '_blank')">Unduh Lampiran</button>` : '<p>Tidak ada lampiran.</p>'}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            else {
+                let icon = menuKey === 'materials' ? '📚' : (menuKey === 'makalah' ? '📄' : '📊');
+                data.forEach(item => {
+                    html += `
+                        <div class="list-item">
+                            <div class="list-thumb">${icon}</div>
+                            <div class="list-content">
+                                <h4>${item.title}</h4>
+                                <p>${item.course}</p>
+                                ${item.author ? `<p style="font-size:10pt; color:var(--text-muted);">Oleh: ${item.author}</p>` : ''}
+                            </div>
+                            ${item.file ? `<button class="btn btn-small" style="padding:10px; min-width:unset;" onclick="window.open('${item.file}', '_blank')">⬇</button>` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML += html;
+        }
+    </script>
+</body>
+</html>
